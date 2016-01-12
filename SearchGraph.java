@@ -206,9 +206,29 @@ public class SearchGraph{
 		}
 	}
 
-	//recursive breadth first search
 
 	//iterative breadth first search
+	void iteativeBFS(SGN _graph){
+
+		Queue q = new Queue();
+
+		q.enqueue(_graph);
+
+		while(!q.queueEmpty()){
+
+			SGN temp = (SGN)q.dequeue();
+
+			if(!temp.getVisited()){
+
+				temp.setVisited();
+
+				for(int v = 0; v < temp.connections.size() ; v++){
+
+					q.enqueue(getByName(temp.connections.get(v)));
+				}
+			}
+		}
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 	//////This node class contains a list of nodes that it is connected to/////

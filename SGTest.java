@@ -30,6 +30,11 @@ class SGTest{
 			//iterativley perform the depth first search algorithm on the first node in the node list
 			sg.iterativeDFS(sg.SG.get(0));
 
+			System.out.println("Showing iterative breadth first search output\n");
+
+			//iterativley perform the breadth first search algorithm on the first node in the node list
+			sg.iterativeDFS(sg.SG.get(0));
+
 
 		}else{
 

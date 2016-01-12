@@ -3,13 +3,14 @@
 
 Built basic graph structure capable of storing generic objects.
 
+Debug 1.
+
+Test 1.
+
 
 
 			TO-DO:
 
-Debug.
-
-Test.
 
 Optimise.
 

@@ -1,25 +1,25 @@
 
 	
 /////////////////////////////////////////////////////////
-///// This is a stack class made by Jethro Holcroft /////
-/////	        It can stack generic objects.	    /////
+///// This is a Queue class made by Jethro Holcroft /////
+/////	      It can Queue generic objects.	        /////
 /////////////////////////////////////////////////////////
 
-public class Stack{
+public class Queue{
 
 	//this is the root of the data structure.
 	public Node head; 
 
 	//constructor creates a starting node.
-	public Stack(){
+	public Queue(){
 
 		//creates an initial node to build from.
 		head = new Node();	
 	}
 
-	//constructs an empty stack by creating a node object and assigning it to 
+	//constructs an empty Que by creating a node object and assigning it to 
 	//'head' member objects 'next' member object.
-	public void push(Object o){
+	public void enqueue(Object o){
 
 		//temporary variable is instanciated with head variable.
 		Node temp = head;
@@ -35,29 +35,17 @@ public class Stack{
 	}
 
 
-	//returns and deletes node at end of stack.
-	public Object pop(){
+	public Object dequeue(){
 
-		//temporary variable is instanciated with head variable.
-		Node temp = head;
-		Node temp2 = temp;
+		Object temp = head.getNext().getObject();
 
-		//while loop iterates through stack
-		while(temp.getNext() != null){
+		head.setNext(head.getNext().getNext());
 
-			//set temp2 to contain temp to preserve last element in stack
-			temp2 = temp;
-			temp = temp.getNext();
-		}
-		
-		temp2.setNext(null);
-
-		//returns last member in stack
-		return temp.getObject();
+		return temp;
 	}
-
-	//uses recursion to iterate through the stack from point of node in args
-	//put head in args to return length of stack.
+	
+	//uses recursion to iterate through the Queue from point of node in args
+	//put head in args to return length of Queue.
 	public int recursiveCount(Node n){
 
 		if(n == null){
@@ -69,8 +57,8 @@ public class Stack{
 		}
 	}
 
-	//returns true if stack is empty
-	public boolean stackEmpty(){
+	//returns true if Queue is empty
+	public boolean queueEmpty(){
 
 		if(head.getNext() == null){
 
@@ -148,4 +136,4 @@ public class Stack{
 		} 
 
 	}//end node class
-}//end stack class
+}//end Queue class
