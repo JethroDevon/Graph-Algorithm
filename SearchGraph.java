@@ -1,4 +1,5 @@
 import java.util.ArrayList; 
+import java.io.*;
 
 /////////////////////////////////////////////////////////
 //   This class will create a graph that can be used   //	
@@ -14,52 +15,75 @@ import java.util.ArrayList;
 
 public class SearchGraph{
 
-	//stores loaded matrix in boolean form
-	boolean[][] ajacencyMatrix;
+	//stores loaded matrix in form of chars representing binary, must make program more modular
+	char[][] ajacencyMatrix  = new char[][]{ 
+  { '0', '0', '0', '0', '0', '0', '0', '0' },
+  { '0', '0', '0', '0', '0', '0', '0', '0' },
+  { '0', '0', '0', '0', '0', '0', '0', '0' },
+  { '0', '0', '0', '0', '0', '0', '0', '0' },
+  { '0', '0', '0', '0', '0', '0', '0', '0' },
+  { '0', '0', '0', '0', '0', '0', '0', '0' },
+  { '0', '0', '0', '0', '0', '0', '0', '0' },
+  { '0', '0', '0', '0', '0', '0', '0', '0' }
+};
 
 	//stores the ajacency matrix with a list of nodes that each own a record of what nodes
 	//they are connected to and if they have been visited
-	ArrayList<SGN> SG = new ArrayList<SG>();
+	ArrayList<SGN> SG = new ArrayList<SGN>();
 
 	//names for Search Graph Nodes, presently jsut alphabetical characters but could be 
 	//a more dynamic and usefull function
-	char[] alphamabet = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+	String[] alphamabet = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X", "Y", "Z"};
+
+	ArrayList<String> discovered = new ArrayList<String>();
 
 	//stores the stream of data from a text file
 	BufferedReader br;
 
-	//this function loads a matrix from a text file
-	void loadMatrix(String _path){
+	//for keeping track of how many rows and cols their is in ajacencyMatrix, ajacency matrix are always squares
+	//however this is more stable if there is a read error loading up the 2d array
+	int nodeX =0, nodeY =0;
 
-		//loads data from text file at path
-		br = new BufferedReader(new FileReader(_path));
+	//this function loads a matrix from a text file, returns true or false for debugging
+	boolean loadMatrix(String _path){
 
-		//stores the temporary char in the string array that contains the ajacency matrix
-		char bin = 0;
+		//will be loading from text file therefore try catch block contains this code
+		try{
 
-		//stores eachline of each string in the text file
-		String line = "";
+			//loads data from text file at path
+			br = new BufferedReader(new FileReader(_path));
 
-		//loops through text file converting '0' or '1' into true or false
-		while(line = br.readLine()){
+			//stores eachline of each string in the text file
+			String line = "";		
 
-			for(int i = 0; i < line.length(); i++){
+			//loops through text file converting '0' or '1' into true or false
+			while((line = br.readLine()) != null){
 
-				bin = line.charAt(i);
+				nodeX = 0;
 
-				//initialisees an X by Y grid of boolean states to create an ajacency matrix
-				if(bin == '1'){
+				for(char c: line.toCharArray()){
 
-					ajacencyMatrix[x][y] = true;
-				}else{
+					if(c == '1'){
 
-					ajacencyMatrix[x][y] = false;
+						ajacencyMatrix[nodeY][nodeX] = '1';
+					}
+					nodeX++;			
 				}
+				
+				nodeY++;
 			}
-		}
 
-		//debug information, lets user know that loadmatrix was called
-		System.out.println("ajacency matrix loaded.");
+			System.out.println("nodeX is: " + nodeX + " and nodeY is : "+nodeY);
+
+		}catch(Exception e){
+
+			//failed, let user know
+			System.out.println("Load failed...");
+			e.printStackTrace(System.out);
+			return false;
+		}	
+
+		return true;
 	}
 
 	//this function adds the connections to each SGN by pushing a dynamically created
@@ -68,7 +92,7 @@ public class SearchGraph{
 
 		//nested loops initialise each new SGN nodes 'connections' ArrayList
 		//with nodes that are connected using the boolean array 'ajacencyMatrix'
-		for(int x = 0; x < ajacencyMatrix.size(); x++ ){
+		for(int x = 0; x < nodeX - 1; x++ ){
 
 			//creates a new SGN node as a node on the array
 			SG.add(new SGN());
@@ -80,10 +104,10 @@ public class SearchGraph{
 			//could take object arguments
 			//SG.get(SG.size() -1).setObject(magicallyCreatePossibleObjects());
 
-			for(int y = 0; y < ajacencyMatrix.size(); y++){
+			for(int y = 0; y <= nodeY -1; y++){
 
 				//if true then there is a connection for other objects
-				if(ajacencyMatrix[x][y] == true){
+				if(ajacencyMatrix[x][y] == '1'){
 
 					//create objects with same name, will set same objects in a later version of this code
 					SG.get(SG.size() -1).connections.add(alphamabet[y]);
@@ -95,92 +119,155 @@ public class SearchGraph{
 		System.out.println("matrix connected");
 	}
 
+	//returns SGN node if name is equal to args
+	SGN getByName(String _name){
+
+		for(int f = 0; f < SG.size(); f++){
+
+				if(SG.get(f).getName() == _name){
+
+					return  SG.get(f);
+				}
+		}
+
+		System.out.println("crash!");
+
+		//else return null
+		return null;
+	}
+
 	//shows all elements in ajacency matrix
 	void showAjacencyMatrix(){
 
-		for(int x = 0; x < ajacencyMatrix.size(); x++ ){		
-			for(int y = 0; y < ajacencyMatrix.size(); y++){
+		for(int x = 0; x < nodeX; x++ ){		
+			for(int y = 0; y < nodeY; y++){
 
 				System.out.print(ajacencyMatrix[x][y]);
 			}
+			System.out.println();
 		}
-
-		System.out.println();
 	}
 
 	//shows all connections in SGN array list SG
 	void showSGN(){
 
-		for(int k = 0; k < SG.size() -1; k++){
+		for(int k = 0; k < SG.size(); k++){
 
 			System.out.print(SG.get(k).getName() + " is connected to: ");
 
 			for(int f = 0; f < SG.get(k).connections.size(); f++){
 
-				System.out.print(SG.get(k).connections.get(f).getName() + " ");
+				System.out.print(SG.get(k).connections.get(f) + " ");
+			}
+
+				System.out.println();
+		}
+	}
+
+	//recursive depth first search
+	void recursiveDFS(SGN _graph){
+
+		//label first vertex as discovered
+		_graph.setVisited();	
+		
+		//for all edges belonging to _graph
+		for(int v = 0; v < _graph.connections.size() -1; v++){
+
+			//if the connection has not been visited
+			if(!getByName(_graph.connections.get(v)).getVisited()){
+
+				//recursivley call function again
+				recursiveDFS(getByName(_graph.connections.get(v)));
+			}
+		}	
+	}
+
+	//iterative depth first search
+	void iterativeDFS(SGN _graph){
+
+		//create new stack object
+		Stack s = new Stack();
+
+		s.push(_graph);
+
+		while(!s.stackEmpty()){
+
+			SGN temp = (SGN)s.pop();
+
+			if(!temp.getVisited()){
+
+				temp.setVisited();
+
+				for(int v = 0; v < temp.connections.size() ; v++){
+
+					s.push(getByName(temp.connections.get(v)));
+				}
 			}
 		}
 	}
+
+	//recursive breadth first search
+
+	//iterative breadth first search
 
 	///////////////////////////////////////////////////////////////////////////
 	//////This node class contains a list of nodes that it is connected to/////
 	////an object to store data on and an alphabetical name to identify it.	 //
 	///////////////////////////////////////////////////////////////////////////
 	public class SGN{
-
-		private char name;
+ 
+		private String name;
 		private Object obj;
 
 		//stores all connections in the form of characters
-		private ArrayList<char> connections = new ArrayList<char>();
-
-		//visited default set to false
-		private boolean visited = false;
-
-		//connections to other nodes are added in load matrix
-		void addConnection(SGN _con){
-
-			connections.add(_con);
-		}
+		private ArrayList<String> connections = new ArrayList<String>();
 
 		//return next unvisited node from connections using names position alpha numerically
-		char getNext(){
-
-			//temporary node returns itself if there are no nodes to visit
-			//this will be used to say that there are no ajacent nodes as 
-			//returning no ajacent nodes is not an option
-			char temp = name;
+		SGN getNext(SGN _g){
 
 			//gets next unvisited connection
 			for(int x = 0; x < connections.size() -1; x++){
+				
+				//if the node has not been visited yet...
+				if(!getByName(connections.get(x)).getVisited()){
 
-				if(!connections.get(x).getVisited && connections.get(x).getName() < temp.getName()){
-
-					temp = connections.get(x).getName();
-				}
+					//then initialise temp SGN node with that to be returned as next node to visit
+					_g = getByName(connections.get(x));
+					break;
+				} 
 			}
 
 			//returns next connection in list or self if there is no more connections
-			return temp;
+			return _g;
 		}
 
 		//getters and setters fot visited, name and object.
 		void setVisited(){
 
-			visited = true;
+			discovered.add(name);
+			System.out.println(getName() + ", ");
 		}
 
 		boolean getVisited(){
 
-			return visited;
+			//serches array to see if the node has been discovered yet
+			for(int d = 0; d < discovered.size() -1; d++){
+
+				if(discovered.get(d) == name){
+					return true;
+				}
+			}
+			
+			return false;
+			
 		}
 
-		char getName(){
+		String getName(){
 
 			return name;
 		}
 
-		void setName(char _n){
+		void setName(String _n){
 
 			name = _n;
 		}
